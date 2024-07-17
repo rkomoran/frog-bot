@@ -29,6 +29,9 @@ async def on_ready():
     if not daily_task.is_running():
         daily_task.start()  # Start the daily task
 
+    if not minute_task.is_running():
+        minute_task.start()  # Start the minute task
+
 @bot.event
 async def on_guild_join(guild):
     # Try to find the "general" channel
@@ -41,10 +44,12 @@ async def on_guild_join(guild):
     if channel:
         print(f"Using channel: {channel.name}")
         if channel.permissions_for(guild.me).send_messages:
-            await channel.send(
-                f"\n**Hello everyone! I'm your friendly frog bot 🐸.** "
-                f"**To receive your daily dose of facts, please set a channel for daily frog facts using the `/setchannel` command.**"
+            embed = discord.Embed(
+                title="Hello everyone!",
+                description="I'm your friendly frog bot 🐸. To receive your daily dose of facts, please set a channel for daily frog facts using the `/setchannel` command.",
+                color=discord.Color.green()
             )
+            await channel.send(embed=embed)
         else:
             print(f"Bot does not have permission to send messages in {channel.name}.")
     else:
@@ -71,13 +76,18 @@ async def set_channel(interaction: discord.Interaction, channel: discord.TextCha
     froglish_fact = convert_to_frog(fact)
     frog_pic_url = await fetch_random_frog_picture()
 
-    await channel.send(f"**Fact:** {fact}\n**Froglish:** {froglish_fact}")
-    await channel.send(frog_pic_url)
+    embed = discord.Embed(
+        title="Daily Frog Fact",
+        description=f"**Fact:** {fact}\n\n**Fact in Froglish:** {froglish_fact}",
+        color=discord.Color.green()
+    )
+    embed.set_image(url=frog_pic_url)
+    await channel.send(embed=embed)
 
     # Inform the user when the next update will be
     now = datetime.now()
-    next_update_time = (now + timedelta(days=1)).replace(hour=0, minute=1, second=0, microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
-    await channel.send(f"The next update will be on {next_update_time}.")
+    next_update_time = (now + timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')
+    await channel.send(f"**The next update will be on {next_update_time}.**")
 
 @bot.tree.command(name="speak", description="Make the bot say a frog quote.")
 async def speak(interaction: discord.Interaction):
@@ -89,12 +99,22 @@ async def speak(interaction: discord.Interaction):
 async def fact(interaction: discord.Interaction):
     fact = get_random_fact()
     froglish_fact = convert_to_frog(fact)
-    await interaction.response.send_message(f"**Fact:** {fact}\n**Froglish:** {froglish_fact}")
+    embed = discord.Embed(
+        title="Random Frog Fact",
+        description=f"**Fact:** {fact}\n\n**Fact in Froglish:** {froglish_fact}",
+        color=discord.Color.green()
+    )
+    await interaction.response.send_message(embed=embed)
 
 @bot.tree.command(name="frogpic", description="Get a random frog picture.")
 async def frogpic(interaction: discord.Interaction):
     frog_pic_url = await fetch_random_frog_picture()
-    await interaction.response.send_message(frog_pic_url)
+    embed = discord.Embed(
+        title="Random Frog Picture",
+        color=discord.Color.green()
+    )
+    embed.set_image(url=frog_pic_url)
+    await interaction.response.send_message(embed=embed)
 
 @bot.tree.command(name="help", description="Get a list of available commands.")
 async def help_command(interaction: discord.Interaction):
@@ -113,7 +133,12 @@ async def help_command(interaction: discord.Interaction):
         "\n**Help Command**: Get this list of commands. "
         "Usage: `/help`\n"
     )
-    await interaction.response.send_message(help_message)
+    embed = discord.Embed(
+        title="Help",
+        description=help_message,
+        color=discord.Color.green()
+    )
+    await interaction.response.send_message(embed=embed)
 
 @bot.command(name="sync")
 @commands.is_owner()
@@ -122,7 +147,7 @@ async def sync(ctx):
     await bot.tree.sync(guild=guild)
     await ctx.send(f"Slash commands have been synced with {guild.name}.")
 
-@tasks.loop(hours=24)
+@tasks.loop(hours=3)
 async def daily_task():
     await bot.wait_until_ready()
 
@@ -141,21 +166,59 @@ async def daily_task():
         froglish_fact = convert_to_frog(fact)
         frog_pic_url = await fetch_random_frog_picture()
 
-        await channel.send(f"**Fact:** {fact}\n**Froglish:** {froglish_fact}")
-        await channel.send(frog_pic_url)
+        embed = discord.Embed(
+            title="Daily Frog Fact",
+            description=f"**Fact:** {fact}\n\n**Fact in Froglish:** {froglish_fact}\n\n**The frog who told you this fact:**",
+            color=discord.Color.green()
+        )
+        embed.description=f"**The frog who told you this fact:**\n"
+        embed.set_image(url=frog_pic_url)
+        await channel.send(embed=embed)
         
         # Inform the user when the next update will be
         now = datetime.now()
-        next_update_time = (now + timedelta(days=1)).replace(hour=0, minute=1, second=0, microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
-        await channel.send(f"The next update will be on {next_update_time}.")
+        next_update_time = (now + timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')
+        await channel.send(f"**The next update will be on {next_update_time}.**")
 
 @daily_task.before_loop
 async def before_daily_task():
     now = datetime.now()
-    target_time = now.replace(hour=0, minute=1, second=0, microsecond=0)
-    if now > target_time:
-        target_time += timedelta(days=1)
+    target_time = (now + timedelta(hours=3)).replace(minute=0, second=0, microsecond=0)
     await discord.utils.sleep_until(target_time)
+
+@tasks.loop(minutes=1)
+async def minute_task():
+    await bot.wait_until_ready()
+
+    for guild in bot.guilds:
+        channel_id = channel_ids.get(guild.id)
+        if channel_id is None:
+            print(f"No channel set for minute messages in {guild.name}.")
+            continue
+
+        channel = bot.get_channel(channel_id)
+        if channel is None or not isinstance(channel, discord.TextChannel):
+            print(f"Channel not found or is not a text channel in {guild.name}.")
+            continue
+
+        fact = get_random_fact()
+        froglish_fact = convert_to_frog(fact)
+        frog_pic_url = await fetch_random_frog_picture()
+
+        embed = discord.Embed(
+            title="Minute Frog Fact",
+            description=f"**Fact:** {fact}\n\n**Fact in Froglish:** {froglish_fact}\n\n**The frog who told you this fact:**",
+            color=discord.Color.green()
+        )
+        embed.set_image(url=frog_pic_url)
+        await channel.send(embed=embed)
+        
+        # Inform the user when the next update will be
+        now = datetime.now()
+        next_update_time = (now + timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')
+        await channel.send(f"**The next update will be on {next_update_time}.**")
+
+        await channel.send("This is a test message sent every minute.")
 
 def get_random_fact():
     try:
