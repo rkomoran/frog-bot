@@ -16,31 +16,60 @@ GUILD = os.getenv('DISCORD_GUILD')
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Store the channel ID in a dictionary (or a database for more complexity)
+channel_ids = {}
+
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
 
-    for guild in bot.guilds:
-        print(f'Syncing commands for guild: {guild.name} (id: {guild.id})')
-        await bot.tree.sync(guild=guild)
-    print("Slash commands have been synced with all guilds.")
-    
-    daily_task.start()  # Start the daily task
+    await bot.tree.sync()  # Sync commands globally
+    print("Slash commands have been synced.")
+
+    if not daily_task.is_running():
+        daily_task.start()  # Start the daily task
 
 @bot.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(f'Hi {member.name}, welcome to my Discord server!')
-
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
+async def on_guild_join(guild):
+    # Try to find the "general" channel
+    channel = discord.utils.get(guild.text_channels, name="general")
     
-    if 'frog' in message.content.lower():
-        await message.add_reaction('🐸')
+    # If "general" doesn't exist, look for any text channel
+    if not channel:
+        channel = discord.utils.get(guild.text_channels, permissions=discord.Permissions(send_messages=True))
+    
+    if channel:
+        print(f"Using channel: {channel.name}")
+        if channel.permissions_for(guild.me).send_messages:
+            await channel.send(
+                f"\n**Hello everyone! I'm your friendly frog bot 🐸.** "
+                f"**To receive your daily dose of facts, please set a channel for daily frog facts using the `/setchannel` command.**"
+            )
+        else:
+            print(f"Bot does not have permission to send messages in {channel.name}.")
+    else:
+        print("No suitable text channel found.")
 
-    await bot.process_commands(message)
+# @bot.event
+# async def on_member_join(member):
+#     await member.create_dm()
+#     await member.dm_channel.send(f'Hi {member.name}, welcome to my Discord server!')
+
+# @bot.event
+# async def on_message(message):
+#     if message.author == bot.user:
+#         return
+    
+#     if 'frog' in message.content.lower():
+#         await message.add_reaction('🐸')
+
+#     await bot.process_commands(message)
+
+@bot.tree.command(name="setchannel", description="Set the channel for daily messages.")
+@app_commands.describe(channel="The channel to send daily messages to.")
+async def set_channel(interaction: discord.Interaction, channel: discord.TextChannel):
+    channel_ids[interaction.guild.id] = channel.id  # Store the channel ID
+    await interaction.response.send_message(f"Daily messages will be sent to {channel.mention}.")
 
 @bot.tree.command(name="speak", description="Make the bot say a frog quote.")
 async def speak(interaction: discord.Interaction):
@@ -59,6 +88,25 @@ async def frogpic(interaction: discord.Interaction):
     frog_pic_url = await fetch_random_frog_picture()
     await interaction.response.send_message(frog_pic_url)
 
+@bot.tree.command(name="help", description="Get a list of available commands.")
+async def help_command(interaction: discord.Interaction):
+    help_message = (
+        "**Frog Bot Commands:**\n"
+        "\n**/setchannel**: Set the channel for daily frog messages. "
+        "Usage: `/setchannel <channel>`\n"
+        "\n**/speak**: Make the bot say a frog quote. "
+        "Usage: `/speak`\n"
+        "\n**/fact**: Get a random fact about frogs with a Froglish translation. "
+        "Usage: `/fact`\n"
+        "\n**/frogpic**: Get a random frog picture. "
+        "Usage: `/frogpic`\n"
+        "\n**/sync**: Sync slash commands for the current guild (owner only). "
+        "Usage: `/sync`\n"
+        "\n**Help Command**: Get this list of commands. "
+        "Usage: `/help`\n"
+    )
+    await interaction.response.send_message(help_message)
+
 @bot.command(name="sync")
 @commands.is_owner()
 async def sync(ctx):
@@ -66,25 +114,62 @@ async def sync(ctx):
     await bot.tree.sync(guild=guild)
     await ctx.send(f"Slash commands have been synced with {guild.name}.")
 
-@tasks.loop(minutes=1)
+# @tasks.loop(hours=24)
+# async def daily_task():
+#     await bot.wait_until_ready()
+    
+#     # Iterate through all guilds and send messages to the configured channel
+#     for guild in bot.guilds:
+#         channel_id = channel_ids.get(guild.id)
+#         if channel_id is None:
+#             print(f"No channel set for daily messages in {guild.name}.")
+#             continue  # Skip this guild if no channel is set
+
+#         channel = bot.get_channel(channel_id)
+#         if channel is None or not isinstance(channel, discord.TextChannel):
+#             print(f"Channel not found or is not a text channel in {guild.name}.")
+#             continue  # Skip if the channel doesn't exist or isn't a text channel
+
+#         fact = get_random_fact()
+#         froglish_fact = convert_to_frog(fact)
+#         frog_pic_url = await fetch_random_frog_picture()
+
+#         await channel.send(f"**Fact:** {fact}\n**Froglish:** {froglish_fact}")
+#         await channel.send(frog_pic_url)
+
+@tasks.loop(hours=24)
 async def daily_task():
     await bot.wait_until_ready()
-    
-    # Get the channel by name
-    channel = discord.utils.get(bot.guilds[0].channels, name="general")  # Change "general" to your desired channel name
-    if channel is None or not isinstance(channel, discord.TextChannel):
-        return  # Exit if the channel doesn't exist or is not a text channel
 
-    fact = get_random_fact()
-    froglish_fact = convert_to_frog(fact)
-    frog_pic_url = await fetch_random_frog_picture()
+    for guild in bot.guilds:
+        channel_id = channel_ids.get(guild.id)
+        if channel_id is None:
+            print(f"No channel set for daily messages in {guild.name}.")
+            continue
 
-    await channel.send(f"**Fact:** {fact}\n**Froglish:** {froglish_fact}")
-    await channel.send(frog_pic_url)
+        channel = bot.get_channel(channel_id)
+        if channel is None or not isinstance(channel, discord.TextChannel):
+            print(f"Channel not found or is not a text channel in {guild.name}.")
+            continue
+
+        fact = get_random_fact()
+        froglish_fact = convert_to_frog(fact)
+        frog_pic_url = await fetch_random_frog_picture()
+
+        await channel.send(f"**Fact:** {fact}\n**Froglish:** {froglish_fact}")
+        await channel.send(frog_pic_url)
 
 @daily_task.before_loop
 async def before_daily_task():
-    await discord.utils.sleep_until(datetime.now() + timedelta(seconds=60))  # Wait before starting the loop
+    now = datetime.now()
+    target_time = now.replace(hour=0, minute=1, second=0, microsecond=0)
+    if now > target_time:
+        target_time += timedelta(days=1)
+    await discord.utils.sleep_until(target_time)
+
+# @daily_task.before_loop
+# async def before_daily_task():
+#     await discord.utils.sleep_until(datetime.now() + timedelta(seconds=60))  # Wait before starting the loop
 
 def get_random_fact():
     try:
