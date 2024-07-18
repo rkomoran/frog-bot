@@ -23,9 +23,17 @@ The bot initializes with all intents enabled, ensuring it can interact fully wit
 - **/frogpic**: Returns a random frog picture.
 - **/sync**: Syncs slash commands for the current guild, accessible only by the bot owner.
 
+*This bot also reacts with a 🐸 emoji to a message that contains the word 'frog'*
+
 ### Daily Fact Delivery
 A daily task runs every 24 hours, delivering a fact and a frog picture to the designated channel. This uses the `tasks.loop` decorator from `discord.ext`.
 
 ### Fetching Random Facts and Frog Pictures
 - **Random Facts**: The bot fetches random facts from the [uselessfacts API](https://uselessfacts.jsph.pl/).
 - **Frog Pictures**: It scrapes random frog images from [All About Frogs](http://allaboutfrogs.org/funstuff/randomfrog.html) using BeautifulSoup and aiohttp for asynchronous HTTP requests.
+
+### Hosting on AWS EC2
+To ensure the bot runs 24/7, it is hosted on an AWS EC2 instance. The bot is set up to restart automatically and handle any downtime efficiently, ensuring it is always available to deliver your daily facts by a froggo.
+
+### Top.gg Page
+Check out Froggo's Daily Facts bot on [top.gg](https://top.gg/bot/1263169512807596137) for more details and to invite the bot to your server!
