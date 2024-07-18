@@ -115,10 +115,10 @@ WantedBy=multi-user.target
 
 >Building Froggo's Daily Facts was a blast!  It totally levelled up my coding skills in a bunch of areas:
 
-- *APIs:* Who knew you could grab random facts from the internet? Using something called a "uselessfacts API" (seriously, that's the name!), I learned how to snag info from other programs and make Froggo even smarter; like parsing JSON responses to fetch some frog pictures. Plus, figuring out how to translate that info into code and deal with any hiccups was a fun challenge.
+- ***APIs:*** Who knew you could grab random facts from the internet? Using something called a "uselessfacts API" (seriously, that's the name!), I learned how to snag info from other programs and make Froggo even smarter; like parsing JSON responses to fetch some frog pictures. Plus, figuring out how to translate that info into code and deal with any hiccups was a fun challenge.
 
-- *Corooutines & Asynchronous Programming:* This sounds fancy, but basically it lets Froggo fetch froggy pictures without getting stuck. Imagine juggling - you can keep an eye on all the balls (requests) without dropping any. This keeps Froggo nice and responsive for everyone. Thanks to aiohttp and discord.py for making this possible!
+- ***Corooutines & Asynchronous Programming:*** This sounds fancy, but basically it lets Froggo fetch froggy pictures without getting stuck. Imagine juggling - you can keep an eye on all the balls (requests) without dropping any. This keeps Froggo nice and responsive for everyone. Thanks to aiohttp and discord.py for making this possible!
   
-- *AWS Hosting:* Taking Froggo from my computer to the cloud with AWS EC2 was like moving to a bigger pond. I learned how to set everything up, keep Froggo running smoothly, and fix any bumps along the road.
+- ***AWS Hosting:*** Taking Froggo from my computer to the cloud with AWS EC2 was like moving to a bigger pond. I learned how to set everything up, keep Froggo running smoothly, and fix any bumps along the road.
 
 Overall, Froggo Facts wasn't just fun for you guys, it was a major learning experience for me.  Now I can build even cooler bots for everyone to enjoy!
