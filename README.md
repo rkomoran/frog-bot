@@ -8,6 +8,8 @@
 
 ![frogbot_recording(5)](https://github.com/user-attachments/assets/4930ef2b-2e35-4cda-8456-b7e4281af2ce)
 
+### Top.gg Page
+Check out Froggo's Daily Facts bot on [top.gg](https://top.gg/bot/1263169512807596137) for more details and to invite the bot to your server!
 
 ## How was this bot made?
 
@@ -35,5 +37,66 @@ A daily task runs every 24 hours, delivering a fact and a frog picture to the de
 ### Hosting on AWS EC2
 To ensure the bot runs 24/7, it is hosted on an AWS EC2 instance. The bot is set up to restart automatically and handle any downtime efficiently, ensuring it is always available to deliver your daily facts by a froggo.
 
-### Top.gg Page
-Check out Froggo's Daily Facts bot on [top.gg](https://top.gg/bot/1263169512807596137) for more details and to invite the bot to your server!
+### Enabling and Starting the Service
+
+After setting up the bot, I had to figure out a way to make it run continously. I used a systemd service on an AWS EC2 instance. Here's how I went about doing it:
+
+- Made the service file in the corresponding folder
+
+```bash
+sudo nano /etc/systemd/system/discordbot.service
+```
+
+```ini
+[Unit]
+Description=Discord Bot Service
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user
+ExecStart=/usr/bin/python3 /home/ec2-user/frogbot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- Then, I did the following to start the service, and ensure it works:
+  - Reload systemd
+    
+    ```bash
+    sudo systemctl daemon-reload
+    ```
+  - Enable the service to start on boot
+
+    ```bash
+    sudo systemctl enable discordbot.service
+    ```
+
+  - Start it
+
+    ```bash
+    sudo systemctl start discordbot.service
+    ```
+
+  - I then checked it if was active, and saw something like this -- which ensured it was working:
+
+    ```bash
+      ● discordbot.service - Discord Bot Service
+     Loaded: loaded (/etc/systemd/system/discordbot.service; enabled; vendor preset: enabled)
+     Active: active (running) since ... 
+   Main PID: ...
+     Tasks: ...
+     Memory: ...
+     CPU: ...
+     CGroup: /system.slice/discordbot.service
+             └─...
+  
+  ... more details ...
+  ```
+
+    
+
+
+
