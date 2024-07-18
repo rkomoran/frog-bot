@@ -81,22 +81,31 @@ WantedBy=multi-user.target
     ```
 
   - I then checked it if was active, and saw something like this -- which ensured it was working:
+  
+    ```bash
+    ● discordbot.service - Discord Bot Service
+    Loaded: loaded (/etc/systemd/system/discordbot.service; enabled; vendor preset: enabled)
+    Active: active (running) since ...
+    Main PID: ...
+    Tasks: ...
+    Memory: ...
+    CPU: ...
+    CGroup: /system.slice/discordbot.service
+            └─...
+    
+    ... more details ...
+    ```
+    
+  That's pretty much it! To stop it, I would do this:
 
   ```bash
-  ● discordbot.service - Discord Bot Service
-  Loaded: loaded (/etc/systemd/system/discordbot.service; enabled; vendor preset: enabled)
-  Active: active (running) since ...
-  Main PID: ...
-  Tasks: ...
-  Memory: ...
-  CPU: ...
-  CGroup: /system.slice/discordbot.service
-          └─...
-  
-  ... more details ...
-  
+  sudo systemctl stop discordbot.service
+  ```
 
-    
+  ```bash
+  sudo systemctl disable discordbot.service
+  ```
 
-
-
+  ```bash
+  sudo systemctl status discordbot.service
+  ```
