@@ -113,7 +113,7 @@ WantedBy=multi-user.target
 
 ## Froggo's Daily Facts : What I Learned
 
-- Building Froggo's Daily Facts was a blast!  It totally levelled up my coding skills in a bunch of areas:
+>Building Froggo's Daily Facts was a blast!  It totally levelled up my coding skills in a bunch of areas:
 
 - *APIs:* Who knew you could grab random facts from the internet? Using something called a "uselessfacts API" (seriously, that's the name!), I learned how to snag info from other programs and make Froggo even smarter. Plus, figuring out how to translate that info into code and deal with any hiccups was a fun challenge.
 
