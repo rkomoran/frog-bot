@@ -5,7 +5,7 @@
 
 >***Enhance your Discord server with this bot that delivers random daily facts to a channel of your choice using /setchannel. Adding a whimsical twist, each fact is presented by a frog, complete with a random frog image and a unique translation in Froglish.***
 
-![ezgif-3-870dc7386e](https://github.com/user-attachments/assets/c1277a45-902a-4a68-96a3-f3ede8667c1e)
+![ezgif-3-4b6a78496c](https://github.com/user-attachments/assets/65462670-29eb-47c9-9a38-7343602f5189)
 
 
 Frog Bot Commands:
