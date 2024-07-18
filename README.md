@@ -9,19 +9,6 @@
 ![frogbot_recording(5)](https://github.com/user-attachments/assets/4930ef2b-2e35-4cda-8456-b7e4281af2ce)
 
 
-Frog Bot Commands:
-
-- */setchannel: Set the channel for daily frog messages. Usage: /setchannel*
-
-- */speak: Make the bot say a frog quote. Usage: /speak*
-
-- */fact: Get a random fact from a frog with a Froglish translation. Usage: /fact*
-
-- */frogpic: Get a random frog picture. Usage: /frogpic*
-
-- */sync: Sync slash commands for the current guild (owner only). Usage: /sync*
-
-
 ## How was this bot made?
 
 Froggo's Daily Facts bot was crafted using Python and the [discord.py](https://discordpy.readthedocs.io/en/stable/) library. The bot's functionality revolves around delivering random facts with a fun twist. Here's a breakdown of the key components:
@@ -29,7 +16,7 @@ Froggo's Daily Facts bot was crafted using Python and the [discord.py](https://d
 ### Bot Setup and Event Handling
 The bot initializes with all intents enabled, ensuring it can interact fully with the server's events and messages. It also ensures that commands are synced across all guilds the bot is part of.
 
-### Commands
+### Frog Bot Commands
 - **/setchannel**: Users can set a specific channel to receive daily frog facts.
 - **/speak**: The bot outputs a random frog-related quote.
 - **/fact**: Fetches a random fact along with its translation in Froglish.
