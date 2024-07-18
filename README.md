@@ -24,4 +24,21 @@ Frog Bot Commands:
 
 ## How was this bot made?
 
-- 
+Froggo's Daily Facts bot was crafted using Python and the [discord.py](https://discordpy.readthedocs.io/en/stable/) library. The bot's functionality revolves around delivering random facts with a fun twist. Here's a breakdown of the key components:
+
+### Bot Setup and Event Handling
+The bot initializes with all intents enabled, ensuring it can interact fully with the server's events and messages. It also ensures that commands are synced across all guilds the bot is part of.
+
+### Commands
+- **/setchannel**: Users can set a specific channel to receive daily frog facts.
+- **/speak**: The bot outputs a random frog-related quote.
+- **/fact**: Fetches a random fact along with its translation in Froglish.
+- **/frogpic**: Returns a random frog picture.
+- **/sync**: Syncs slash commands for the current guild, accessible only by the bot owner.
+
+### Daily Fact Delivery
+A daily task runs every 24 hours, delivering a fact and a frog picture to the designated channel. This uses the `tasks.loop` decorator from `discord.ext`.
+
+### Fetching Random Facts and Frog Pictures
+- **Random Facts**: The bot fetches random facts from the [uselessfacts API](https://uselessfacts.jsph.pl/).
+- **Frog Pictures**: It scrapes random frog images from [All About Frogs](http://allaboutfrogs.org/funstuff/randomfrog.html) using BeautifulSoup and aiohttp for asynchronous HTTP requests.
