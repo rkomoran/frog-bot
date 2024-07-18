@@ -34,7 +34,7 @@ A daily task runs every 24 hours, delivering a fact and a frog picture to the de
 - **Random Facts**: The bot fetches random facts from the [uselessfacts API](https://uselessfacts.jsph.pl/).
 - **Frog Pictures**: It scrapes random frog images from [All About Frogs](http://allaboutfrogs.org/funstuff/randomfrog.html) using BeautifulSoup and aiohttp for asynchronous HTTP requests.
 
-### Hosting on AWS EC2
+## Hosting on AWS EC2
 To ensure the bot runs 24/7, it is hosted on an AWS EC2 instance. The bot is set up to restart automatically and handle any downtime efficiently, ensuring it is always available to deliver your daily facts by a froggo.
 
 ### Enabling and Starting the Service
@@ -111,7 +111,7 @@ WantedBy=multi-user.target
   ```
 
 
-### Froggo's Daily Facts : What I Learned
+## Froggo's Daily Facts : What I Learned
 
 - Building Froggo's Daily Facts was a blast!  It totally levelled up my coding skills in a bunch of areas:
 
