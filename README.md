@@ -13,7 +13,7 @@ Check out Froggo's Daily Facts bot on [top.gg](https://top.gg/bot/12631695128075
 
 ## How was this bot made?
 
-Froggo's Daily Facts bot was crafted using Python and the [discord.py](https://discordpy.readthedocs.io/en/stable/) library. The bot's functionality revolves around delivering random facts with a fun twist. Here's a breakdown of the key components:
+>Froggo's Daily Facts bot was crafted using Python and the [discord.py](https://discordpy.readthedocs.io/en/stable/) library. The bot's functionality revolves around delivering random facts with a fun twist. Here's a breakdown of the key components:
 
 ### Bot Setup and Event Handling
 The bot initializes with all intents enabled, ensuring it can interact fully with the server's events and messages. It also ensures that commands are synced across all guilds the bot is part of.
@@ -35,7 +35,7 @@ A daily task runs every 24 hours, delivering a fact and a frog picture to the de
 - **Frog Pictures**: It scrapes random frog images from [All About Frogs](http://allaboutfrogs.org/funstuff/randomfrog.html) using BeautifulSoup and aiohttp for asynchronous HTTP requests.
 
 ## Hosting on AWS EC2
-To ensure the bot runs 24/7, it is hosted on an AWS EC2 instance. The bot is set up to restart automatically and handle any downtime efficiently, ensuring it is always available to deliver your daily facts by a froggo.
+>To ensure the bot runs 24/7, it is hosted on an AWS EC2 instance. The bot is set up to restart automatically and handle any downtime efficiently, ensuring it is always available to deliver your daily facts by a froggo.
 
 ### Enabling and Starting the Service
 
